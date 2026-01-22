@@ -1,12 +1,25 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 
 User = get_user_model()
 
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, blank=True)
     description = models.TextField(blank=True, default='')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+
+            counter = 1
+            while Category.objects.filter(slug=self.slug).exists():
+                self.slug = slugify(f"{self.name}-{counter}")
+                counter += 1
+
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -28,6 +41,7 @@ class Task(models.Model):
         HIGH = 'high', 'High'
 
     title = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, blank=True)
     description = models.TextField(blank=True, null=True)
     due_date = models.DateTimeField(blank=True, null=True)
     status = models.CharField(
@@ -48,6 +62,17 @@ class Task(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+
+            counter = 1
+            while Category.objects.filter(slug=self.slug).exists():
+                self.slug = slugify(f"{self.name}-{counter}")
+                counter += 1
+
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
