@@ -45,6 +45,7 @@ class CategoryModelAdmin(admin.ModelAdmin):
     empty_value_display = 'No'
     list_display_links = ('name', 'colored_slug', 'display_description', 'display_image')
     list_filter = (IsActiveFilter, )
+    search_fields = ('name', 'description')
 
     @admin.display(description='Description')
     def display_description(self, obj):
