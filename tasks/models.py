@@ -9,6 +9,7 @@ class Category(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField(blank=True, default='')
+    image = models.ImageField(upload_to='categery_images/%Y/%m/%d/', blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -65,7 +66,7 @@ class Task(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = slugify(self.title)
 
             counter = 1
             while Category.objects.filter(slug=self.slug).exists():
